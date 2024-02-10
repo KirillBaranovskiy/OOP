@@ -1,4 +1,4 @@
 *.obj
 *.o
 *.exe
-*.vcxproj
+Project2.vcxproj
