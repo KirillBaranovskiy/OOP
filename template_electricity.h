@@ -1,6 +1,5 @@
 #pragma once
 #include "template_Ielectricity.h"
-
 template<class T>
 class template_electricity : public template_Ielectricity<T>
 {
@@ -8,7 +7,7 @@ public:
 	template_electricity();
 	template_electricity(const double& tariff);
 	virtual ~template_electricity();
-	static const short YEAR = 3; // 12
+	static const short YEAR = 12;
 	virtual void set_tariff(const double& tariff);
 	virtual void set_estimated_year(const short estimated_year);
 	virtual void set_initial_indication(const T initial_indication) override;
@@ -26,9 +25,9 @@ protected:
 	double tariff = 0;
 	short estimated_year = 0;
 	T initial_indication = 0;
-	T indications[YEAR]{ -1, -1, -1 }; // , -1, -1, -1, -1, -1, -1, -1, -1, -1
+	T indications[YEAR]{ -1, -1, -1 , -1, -1, -1, -1, -1, -1, -1, -1, -1 };
 	double calc_indications[YEAR]{ 0 };
-	string month[YEAR]{ "€нварь", "февраль", "март" }; //, "апрель", "май", "июнь", "июль", "август", "сент€брь", "окт€брь", "но€брь", "декабрь" 
+	string month[YEAR]{ "€нварь", "февраль", "март" , "апрель", "май", "июнь", "июль", "август", "сент€брь", "окт€брь", "но€брь", "декабрь" };
 	double payments[YEAR]{ 0 };
 	double sum_payments = 0;
 	double avrg_energy = 0;
@@ -62,3 +61,5 @@ protected:
 	}
 	const short initial_month = 0;
 };
+
+

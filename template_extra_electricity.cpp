@@ -1,31 +1,17 @@
 #include "template_extra_electricity.h"
 #include "template_electricity.h"
-
 template class template_extra_electricity<int>; // without this, error LNK2019 LNK1120
 template class template_extra_electricity<double>; // without this, error LNK2019 LNK1120
-
 template<class T>
-template_extra_electricity<T>::template_extra_electricity()
-{
-	cout << "__constructor default template_extra_electricity__" << endl;
-}
-
+template_extra_electricity<T>::template_extra_electricity() {}
 template<class T>
-template_extra_electricity<T>::template_extra_electricity(const double& tariff)
-{
-	cout << "__constructor with parameter template_extra_electricity__" << endl;
-}
-
+template_extra_electricity<T>::template_extra_electricity(const double& tariff) {}
 template<class T>
-template_extra_electricity<T>::~template_extra_electricity()
-{
-	cout << "__destructor emplate_extra_electricity__" << endl;
-}
-
+template_extra_electricity<T>::~template_extra_electricity() {}
 template<class T>
 void template_extra_electricity<T>::set_penalty(const short month, const double& penalty)
 {
-	if ((month >= 0 && month < template_electricity<T>::YEAR) && (penalty > 0 && penalty <= 9999))
+	if ((month >= 0 && month < template_electricity<T>::YEAR) && (penalty > 0 && penalty <= 99999))
 	{
 		penalties[month] = penalty;
 		sum_penalty = 0;
@@ -34,15 +20,13 @@ void template_extra_electricity<T>::set_penalty(const short month, const double&
 			sum_penalty += penalties[i];
 		}
 	}
-	else throw exception("must be (month >= 0 && month < 12) && (penalty > 0 && penalty <= 9999)");
+	else throw exception("must be (month >= 0 && month < 12) && (penalty > 0 && penalty <= 99999)");
 }
-
 template<class T>
 double template_extra_electricity<T>::get_sum_penalty() const
 {
 	return sum_penalty;
 }
-
 template<class T>
 void template_extra_electricity<T>::print_summary_info() const
 {
@@ -60,20 +44,17 @@ void template_extra_electricity<T>::print_summary_info() const
 	}
 	cout << "=======================================================" << endl;
 }
-
 template<class T>
 void template_extra_electricity<T>::print_summary_info(const short month) const
 {
 	template_electricity<T>::print_summary_info(month);
 	cout << "Пеня за " << template_electricity<T>::month[month] << " составляет " << penalties[month] << " руб." << endl;
 }
-
 template<class T>
 double template_extra_electricity<T>::operator[](const short month) const
 {
 	return template_electricity<T>::operator[](month) + penalties[month];
 }
-
 template<class T>
 double template_extra_electricity<T>::get_total_sum() const
 {

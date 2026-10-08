@@ -1,6 +1,5 @@
 #pragma once
 #include "template_electricity.h"
-
 template<class T>
 class template_extra_electricity : public template_electricity<T>
 {
@@ -16,6 +15,7 @@ public:
 	virtual void print_summary_info() const override;
 	virtual void print_summary_info(const short month) const override;
 	virtual double operator [] (const short month) const override;
+	virtual double get_total_sum() const;
 	inline friend ostream& operator << (ostream& os, const template_extra_electricity& obj)
 	{
 		if (obj.is_sum_avrg_set)
@@ -32,5 +32,5 @@ public:
 			return os;
 		}
 	}
-	virtual double get_total_sum() const;
 };
+

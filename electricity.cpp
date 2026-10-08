@@ -1,15 +1,9 @@
-#include "template_electricity.h"
-#include <iomanip>
-template class template_electricity<int>; // without this, error LNK2019 LNK1120
-template class template_electricity<double>; // without this, error LNK2019 LNK1120
-template<class T>
-template_electricity<T>::template_electricity()
+#include "electricity.h"
+electricity::electricity()
 {
 }
-template<class T>
-template_electricity<T>::template_electricity(const double& tariff)
+electricity::electricity(const double& tariff)
 {
-	cout << "__constructor with parameter template_electricity__" << endl;
 	if (tariff > 0)
 	{
 		this->tariff = tariff;
@@ -20,12 +14,8 @@ template_electricity<T>::template_electricity(const double& tariff)
 		throw exception("must be tariff > 0");
 	}
 }
-template<class T>
-template_electricity<T>::~template_electricity()
-{
-}
-template<class T>
-void template_electricity<T>::set_tariff(const double& tariff)
+electricity::~electricity() { }
+void electricity::set_tariff(const double& tariff)
 {
 	if (tariff > 0)
 	{
@@ -40,9 +30,9 @@ void template_electricity<T>::set_tariff(const double& tariff)
 			}
 			if (count == YEAR && is_initial_indication_set && is_tariff_set)
 			{
-				get_sum_payments();
-				set_avrg_energy();
-				double temp_initial_indications = initial_indication;
+				electricity::set_sum_payments();
+				electricity::set_avrg_energy();
+				int temp_initial_indications = initial_indication;
 				for (size_t i = 0; i < YEAR; i++)
 				{
 					calc_indications[i] = this->indications[i] - temp_initial_indications;
@@ -61,9 +51,10 @@ void template_electricity<T>::set_tariff(const double& tariff)
 		throw exception("must be tariff > 0");
 	}
 }
-template<class T>
-void template_electricity<T>::set_estimated_year(const short estimated_year)
+void electricity::set_estimated_year(const short estimated_year)
 {
+	//магическое число 1872 на самом деле дата появления первого электросчетчика.
+	//учетный год теоретически возможен только с 1872 года
 	if (estimated_year >= 1872)
 	{
 		this->estimated_year = estimated_year;
@@ -73,8 +64,7 @@ void template_electricity<T>::set_estimated_year(const short estimated_year)
 		throw exception("must be estimated_year >= 1872");
 	}
 }
-template<class T>
-void template_electricity<T>::set_initial_indication(const T initial_indication)
+void electricity::set_initial_indication(const int initial_indication)
 {
 	if (initial_indication >= 0)
 	{
@@ -89,9 +79,9 @@ void template_electricity<T>::set_initial_indication(const T initial_indication)
 			}
 			if (count == YEAR && is_initial_indication_set && is_tariff_set)
 			{
-				template_electricity::set_sum_payments();
-				template_electricity::set_avrg_energy();
-				double temp_initial_indications = initial_indication;
+				electricity::set_sum_payments();
+				electricity::set_avrg_energy();
+				int temp_initial_indications = initial_indication;
 				for (size_t i = 0; i < YEAR; i++)
 				{
 					calc_indications[i] = this->indications[i] - temp_initial_indications;
@@ -110,79 +100,78 @@ void template_electricity<T>::set_initial_indication(const T initial_indication)
 		throw exception("must be initial_indication >= 0");
 	}
 }
-template<class T>
-void template_electricity<T>::set_indications(const short month, const T indications)
+void electricity::set_indications(const short month, const int indications)
 {
 	if ((month >= 0 && month < YEAR) && (indications >= 0 && indications <= 99999))
 	{
 		this->indications[month] = indications;
-		short count = 0;
-		for (size_t i = 0; i < YEAR; i++)
-		{
-			if (this->indications[i] >= 0)
-			{
-				count++;
-			}
-			if (count == YEAR && is_initial_indication_set && is_tariff_set)
-			{
-				template_electricity::set_sum_payments();
-				template_electricity::set_avrg_energy();
-				double temp_initial_indications = initial_indication;
-				for (size_t i = 0; i < YEAR; i++)
-				{
-					calc_indications[i] = this->indications[i] -
-						temp_initial_indications;
-					temp_initial_indications = this->indications[i];
-				}
-				for (size_t i = 0; i < YEAR; i++)
-				{
-					payments[i] = calc_indications[i] * tariff;
-				}
-				is_sum_avrg_set = true;
-			}
-		}
 	}
 	else
 	{
-		throw exception("must be (month >= 0 && month < 12) && (indications >= 0 && indications <= 99999)");
+		throw exception("must be (month >= 0 && month < YEAR) && (indications >= 0 && indications <= 99999)");
+	}
+	short count = 0;
+	for (size_t i = 0; i < YEAR; i++)
+	{
+		if (this->indications[i] >= 0)
+		{
+			count++;
+		}
+		if (count == YEAR && is_initial_indication_set && is_tariff_set)
+		{
+			electricity::set_sum_payments();
+			electricity::set_avrg_energy();
+			int temp_initial_indications = initial_indication;
+			for (size_t i = 0; i < YEAR; i++)
+			{
+				calc_indications[i] = this->indications[i] - temp_initial_indications;
+				temp_initial_indications = this->indications[i];
+			}
+			for (size_t i = 0; i < YEAR; i++)
+			{
+				payments[i] = calc_indications[i] * tariff;
+			}
+			is_sum_avrg_set = true;
+		}
 	}
 }
-template<class T>
-double template_electricity<T>::get_tariff() const
+void electricity::set_sum_payments()
+{
+	sum_payments = (indications[YEAR - 1] - initial_indication) * tariff;
+}
+void electricity::set_avrg_energy()
+{
+	avrg_energy = double((indications[YEAR - 1] - initial_indication)) / YEAR;
+}
+double electricity::get_tariff() const
 {
 	return tariff;
 }
-template<class T>
-T template_electricity<T>::get_initial_indication() const
+int electricity::get_initial_indication() const
 {
-	return T(initial_indication);
+	return initial_indication;
 }
-template<class T>
-double template_electricity<T>::get_sum_payments() const
+double electricity::get_sum_payments() const
 {
 	return sum_payments;
 }
-template<class T>
-double template_electricity<T>::get_avrg_energy() const
+double electricity::get_avrg_energy() const
 {
 	return avrg_energy;
 }
-template<class T>
-bool template_electricity<T>::is_calc_done() const
+bool electricity::is_calc_done() const
 {
 	if (is_sum_avrg_set) return true;
 	else return false;
 }
-template<class T>
-void template_electricity<T>::print_summary_info() const
+void electricity::print_summary_info() const
 {
-	cout << endl;
 	cout << "Ваш тариф (стоимость кВт/ч): " << tariff << " кВ/ч." << endl;
 	if (estimated_year > 0) { cout << "Расчетный год: " << estimated_year << endl; }
 	else { cout << "Расчетный год: данные не введены." << endl; }
 	if (is_initial_indication_set)
 	{
-		cout << "Начальное показание счетчика: " << initial_indication << " кВ/ч." << endl;
+		cout << "Начальное показание счетчика: " << get_initial_indication() << " кВ/ч." << endl;
 	}
 	else { cout << "Начальное показание счетчика: данные не введены." << endl; }
 	cout << endl;
@@ -192,17 +181,15 @@ void template_electricity<T>::print_summary_info() const
 		{
 			if (indications[i] != -1)
 			{
-				cout << "Показание счетчика за " << month[i] << ": " <<
-					indications[i] << " кВ/ч." << endl;
+				cout << "Показание счетчика за " << month[i] << ": " << indications[i] << " кВ/ч." << endl;
 			}
 			if (indications[i] == -1)
 			{
-				cout << "Показание счетчика за " << month[i] << ": " <<
-					"данные не введены." << endl;
+				cout << "Показание счетчика за " << month[i] << ": " << "данные не введены." << endl;
 			}
 		}
 		cout << "Сумма платежей и среднее потребление электричества: недостаточно данных." << endl;
-		cout << "=======================================================" << endl;
+		cout << "========================================================================" << endl;
 	}
 	if (is_sum_avrg_set)
 	{
@@ -211,16 +198,13 @@ void template_electricity<T>::print_summary_info() const
 			cout << "Показание счетчика за " << month[i] << ": " << indications[i] << " кВ/ч." << endl;
 			cout << "За " << month[i] << " израсходовано " << calc_indications[i] << " кВ/ч." << endl;
 			cout << "За " << month[i] << " начислено " << payments[i] << " руб." << endl;
-			cout << endl;
 		}
-		cout << endl;
 		cout << "Всего за год начислено " << sum_payments << " руб." << endl;
-		cout << "Среднее потребление энергии в месяц составляет " << fixed << setprecision(2) << avrg_energy << " кВ/ч." << endl;
+		cout << "Среднее потребление энергии в месяц составляет " << avrg_energy << " кВ/ч." << endl;
 		cout << "=======================================================" << endl;
 	}
 }
-template<class T>
-void template_electricity<T>::print_summary_info(const short month) const
+void electricity::print_summary_info(const short month) const
 {
 	if (month >= 0 && month < YEAR)
 	{
@@ -242,10 +226,9 @@ void template_electricity<T>::print_summary_info(const short month) const
 			cout << "За " << this->month[month] << " начислено " << payments[month] << " руб." << endl;
 		}
 	}
-	else { throw exception("Must be month >= 0 && month < 12"); }
+	else { throw exception("must be month >= 0 && month < YEAR"); }
 }
-template<class T>
-double template_electricity<T>::operator[](const short month) const
+double electricity::operator[](const short month) const
 {
 	if (month >= 0 && month < YEAR)
 	{
@@ -255,20 +238,28 @@ double template_electricity<T>::operator[](const short month) const
 		}
 		else return 0;
 	}
-	else { throw exception("Must be (month >= 0 && month < 12"); }
+	else { throw exception("must be month >= 0 && month < YEAR"); }
 }
-template<class T>
-short template_electricity<T>::get_initial_month() const
+ostream& operator<<(ostream& os, const electricity& obj)
 {
-	return initial_month;
+	if (obj.is_sum_avrg_set)
+	{
+		os << "Всего за 12 месяцев начислено " << obj.sum_payments << " руб." << endl;
+		os << "Среднее потребление энергии в месяц составляет " << obj.avrg_energy << " кВ/ч.";
+		return os;
+	}
+	else
+	{
+		os << "Невозможно получить сводные данные т.к. недостаточно данных." << endl;
+		return os;
+	}
 }
-template<class T>
-void template_electricity<T>::set_sum_payments()
+double& operator+=(double& sum, const electricity& obj)
 {
-	sum_payments = (indications[YEAR - 1] - initial_indication) * tariff;
-}
-template<class T>
-void template_electricity<T>::set_avrg_energy()
-{
-	avrg_energy = (indications[YEAR - 1] - initial_indication) / YEAR;
+	if (obj.is_sum_avrg_set)
+	{
+		sum += obj.avrg_energy;
+		return sum;
+	}
+	else return sum = 0;
 }
